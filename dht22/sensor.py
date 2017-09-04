@@ -1,6 +1,8 @@
 import asyncio
 import collections
 
+from aioinflux import AsyncInfluxDBClient
+
 from .rbp2 import *  # noqa
 
 
@@ -13,6 +15,8 @@ class Sensor:
     def __init__(self, pin, *, loop=None):
         self.pin = pin
         self.loop = loop or asyncio.get_event_loop()
+
+        self.client = aioinflux.AsyncInfluxDBClient(database='sensors')
 
         self._data = None
         self._waiters = collections.deque()
@@ -38,6 +42,13 @@ class Sensor:
                 if not fut.done() and (counter is None or counter < self.counter):
                     fut.set_result((self.counter, self._data))
 
+            asyncio.ensure_future(self.client.write({
+                'measurement': 'dht22',
+                'tags': {'sensor': 'dht22',
+                         'location': 'office'},
+                'fields': {'temperature': self._data[0],
+                           'humidity': self._data[1]}
+            })
             await asyncio.sleep(2)
 
     def subscribe(self):
