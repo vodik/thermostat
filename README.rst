@@ -4,8 +4,8 @@ DIY Thermostat
 
 My DIY thermostat project.
 
-Still very much in an early phase of development, so don't expect to be able to
-run anything.
+Still super alpha, very early in development, so don't expect to be able to run
+anything. Don't stand by the code's quality yet.
 
 I want to build myself a programmable thermostat while also being able to
 distribute sensors around my apartment. This way I have the ability of
@@ -28,3 +28,14 @@ What I want to move towards:
 - Record measurements into InfluxDB.
 - Expose another API for controlling the thermostat.
 - Store all thermostat state change events in a persistent database for debugging.
+
+Parts and Designs
+-----------------
+
+TODO
+
+Notes
+-----
+
+- aioinflux is vendored from plugaai/aioinflux
+- dht22 driver is based on the official Adafruit driver, but wrapped with Cython
