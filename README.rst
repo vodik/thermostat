@@ -17,9 +17,21 @@ degrees.
 Architecture
 ------------
 
-Currently there's a daemon that reads from a DHT22 sensor every two seconds,
-exposes the value over a REST endpoint and a WebSocket, and also records the
-measurements into InfluxDB.
+Currently made of two parts:
+
+Metric collection is handled by a standalone agent that pushes metrics into a
+sensor network via zmq:
+
+.. code ::
+
+    python -m dht22 --pin 4 tcp://localhost:6667
+
+Then a centralized daemon recieves incoming metrics, exposes the value over a
+REST endpoint and a WebSocket, and also records the measurements into InfluxDB:
+
+.. code ::
+
+   python -m aiohttp.web thermostat.app:app_factory -H 0.0.0.0 -P 5000
 
 What I want to move towards:
 
