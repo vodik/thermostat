@@ -48,6 +48,7 @@ setup(
         'aiohttp',
         'aiohttp-index',
         'aiozmq',
+        'pandas',
     ],
     cmdclass = cmdclass,
     ext_modules=ext_modules,

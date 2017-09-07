@@ -7,9 +7,9 @@ import sys
 
 from aiohttp import web
 from aiohttp_index import IndexMiddleware
+from dht22 import Sensor
 
 from . import meteorology
-from .sensor import Sensor
 
 
 async def read_sensor(sensor):

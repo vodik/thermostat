@@ -16,7 +16,7 @@ class Sensor:
         self.pin = pin
         self.loop = loop or asyncio.get_event_loop()
 
-        self.client = aioinflux.AsyncInfluxDBClient(database='sensors')
+        self.client = AsyncInfluxDBClient(database='sensors')
 
         self._data = None
         self._waiters = collections.deque()
@@ -48,7 +48,7 @@ class Sensor:
                          'location': 'office'},
                 'fields': {'temperature': self._data[0],
                            'humidity': self._data[1]}
-            })
+            }))
             await asyncio.sleep(2)
 
     def subscribe(self):

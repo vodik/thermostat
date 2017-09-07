@@ -1,1 +1,1 @@
-from .rbp2 import *  # noqa
+from .sensor import Sensor  # noqa
