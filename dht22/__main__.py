@@ -19,10 +19,7 @@ async def dht22_poll(target, pin):
         with contextlib.closing(sender):
             while True:
                 humidity, temperature = await subscription.read()
-                sender.write((b'dht22', msgpack.packb({
-                    'humidity': humidity,
-                    'temperature': temperature
-                })))
+                sender.write((b'dht22', msgpack.packb((humidity, temperature))))
     finally:
         future.cancel()
 

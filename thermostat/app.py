@@ -7,7 +7,11 @@ import sys
 
 from aiohttp import web
 from aiohttp_index import IndexMiddleware
+import aioinflux
+import aiozmq
 from dht22 import Sensor
+import msgpack
+import zmq
 
 from . import meteorology
 
@@ -42,8 +46,28 @@ async def websocket_sensor(request):
 
 
 async def start_sensor(app):
-    sensor = Sensor(4)
-    asyncio.ensure_future(sensor.poll())
+    from dht22.pubsub import Publisher
+
+    TARGET = 'tcp://0.0.0.0:6667'
+    reader = await aiozmq.create_zmq_stream(zmq.PULL, bind=TARGET)
+    client = aioinflux.AsyncInfluxDBClient(database='sensors')
+
+    async def read_loop(publisher):
+        while True:
+            data = await reader.read()
+            assert data[0] == b'dht22'
+            payload = msgpack.unpackb(data[1], use_list=False)
+            sensor.publish(payload)
+            asyncio.ensure_future(client.write({
+                'measurement': 'dht22',
+                'tags': {'sensor': 'dht22',
+                         'location': 'office'},
+                'fields': {'humidity': payload[0],
+                           'temperature': payload[1]}
+            }))
+
+    sensor = Publisher()
+    asyncio.ensure_future(read_loop(sensor))
     app['sensor'] = sensor
 
 
