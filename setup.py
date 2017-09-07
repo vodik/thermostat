@@ -49,9 +49,15 @@ setup(
         'aiohttp-index',
         'aiozmq',
         'pandas',
+        'msgpack-python',
     ],
     cmdclass = cmdclass,
     ext_modules=ext_modules,
+    entry_points={
+        'console_scripts': [
+            'dht22=dht22.__main__:main'
+        ]
+    },
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
