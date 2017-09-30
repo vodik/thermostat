@@ -47,8 +47,8 @@ setup(
     install_requires=[
         'aiohttp',
         'aiohttp-index',
-        'aiozmq',
         'pandas',
+        'pyzmq>=17.0.0b1',
         'msgpack-python',
     ],
     cmdclass = cmdclass,

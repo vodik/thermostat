@@ -8,20 +8,28 @@ import sys
 from aiohttp import web
 from aiohttp_index import IndexMiddleware
 import aioinflux
-import aiozmq
 from dht22 import Sensor
+from dht22.pubsub import Publisher
 import msgpack
 import zmq
+import zmq.asyncio
 
 from . import meteorology
 
 
+context = zmq.asyncio.Context()
+
+
 async def read_sensor(sensor):
-    humidity, temperature = await sensor.read()
+    identifier, (humidity, temperature) = await sensor.read()
     dewpoint = meteorology.dewpoint(temperature, humidity)
     humidex = meteorology.humidex(temperature, dewpoint)
 
-    return {'humidity': humidity,
+    sensor, name = identifier.decode().split('/')
+
+    return {'sensor': {'type': sensor,
+                       'name': name},
+            'humidity': humidity,
             'temperature': temperature,
             'dewpoint': dewpoint,
             'humidex': humidex,
@@ -46,25 +54,17 @@ async def websocket_sensor(request):
 
 
 async def start_sensor(app):
-    from dht22.pubsub import Publisher
-
-    TARGET = 'tcp://0.0.0.0:6667'
-    reader = await aiozmq.create_zmq_stream(zmq.PULL, bind=TARGET)
-    client = aioinflux.AsyncInfluxDBClient(database='sensors')
+    reader = context.socket(zmq.PULL)
+    reader.bind('tcp://0.0.0.0:6667')
 
     async def read_loop(publisher):
         while True:
-            data = await reader.read()
-            assert data[0] == b'dht22'
-            payload = msgpack.unpackb(data[1], use_list=False)
-            sensor.publish(payload)
-            asyncio.ensure_future(client.write({
-                'measurement': 'dht22',
-                'tags': {'sensor': 'dht22',
-                         'location': 'office'},
-                'fields': {'humidity': payload[0],
-                           'temperature': payload[1]}
-            }))
+            print('READING')
+            identifier, measurement = await reader.recv_multipart()
+            print(identifier, measurement)
+            assert identifier.startswith(b'dht22')
+            payload = msgpack.unpackb(measurement, use_list=False)
+            sensor.publish((identifier, payload))
 
     sensor = Publisher()
     asyncio.ensure_future(read_loop(sensor))
@@ -72,10 +72,6 @@ async def start_sensor(app):
 
 
 def app_factory(args=()):
-    """Create a new aiohttp web server.
-
-    Then connect to our Vega so we can drive it and add our routes.
-    """
     app = web.Application(middlewares=[IndexMiddleware()])
     app.on_startup.append(start_sensor)
 
