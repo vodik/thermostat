@@ -47,9 +47,9 @@ setup(
     install_requires=[
         'aiohttp',
         'aiohttp-index',
-        'pandas',
-        'pyzmq>=17.0.0b1',
         'msgpack-python',
+        'prometheus_async',
+        'pyzmq>=17.0.0b1'
     ],
     cmdclass = cmdclass,
     ext_modules=ext_modules,

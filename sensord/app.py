@@ -10,15 +10,17 @@ from aiohttp_index import IndexMiddleware
 from dht22 import Sensor
 from dht22.pubsub import Publisher
 import msgpack
+from prometheus_async import aio
 import zmq
 import zmq.asyncio
 
-from . import meteorology
+from . import meteorology, metrics
 
 
 context = zmq.asyncio.Context()
 
 
+@aio.time(metrics.REQ_TIME)
 async def read_sensor(sensor):
     identifier, (humidity, temperature) = await sensor.read()
     dewpoint = meteorology.dewpoint(temperature, humidity)
@@ -63,17 +65,22 @@ async def start_sensor(app):
             print(identifier, measurement)
             assert identifier.startswith(b'dht22')
             payload = msgpack.unpackb(measurement, use_list=False)
-            sensor.publish((identifier, payload))
 
-    sensor = Publisher()
-    asyncio.ensure_future(read_loop(sensor))
-    app['sensor'] = sensor
+            sensor, name = identifier.decode().split('/')
+            metrics.HUMIDITY.labels(sensor=sensor, name=name).set(payload[0])
+            metrics.TEMPERATURE.labels(sensor=sensor, name=name).set(payload[1])
+            publisher.publish((identifier, payload))
+
+    publisher = Publisher()
+    asyncio.ensure_future(read_loop(publisher))
+    app['sensor'] = publisher
 
 
 def app_factory(args=()):
     app = web.Application(middlewares=[IndexMiddleware()])
     app.on_startup.append(start_sensor)
 
+    app.router.add_get('/metrics', aio.web.server_stats)
     app.router.add_get('/api/v1/sensor', get_sensor)
     app.router.add_get('/api/v1/sensor/ws', websocket_sensor)
     app.router.add_static('/', 'static')
