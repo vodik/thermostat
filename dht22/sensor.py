@@ -1,8 +1,6 @@
 import asyncio
 import collections
 
-from aioinflux import AsyncInfluxDBClient
-
 from .rbp2 import dht_read
 from .pubsub import Publisher
 

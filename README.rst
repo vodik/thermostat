@@ -27,7 +27,7 @@ sensor network via zmq:
     python -m dht22 --pin 4 tcp://localhost:6667
 
 Then a centralized daemon recieves incoming metrics, exposes the value over a
-REST endpoint and a WebSocket, and also records the measurements into InfluxDB:
+REST endpoint and a WebSocket.
 
 .. code ::
 
@@ -49,5 +49,4 @@ TODO
 Notes
 -----
 
-- aioinflux is vendored from plugaai/aioinflux
 - dht22 driver is based on the official Adafruit driver, but wrapped with Cython

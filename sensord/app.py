@@ -7,7 +7,6 @@ import sys
 
 from aiohttp import web
 from aiohttp_index import IndexMiddleware
-import aioinflux
 from dht22 import Sensor
 from dht22.pubsub import Publisher
 import msgpack
