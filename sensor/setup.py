@@ -12,7 +12,7 @@ except ImportError:
 
 
 cmdclass = {}
-long_description=open('README.rst', encoding='utf-8').read()
+long_description=open('../README.rst', encoding='utf-8').read()
 
 
 if USE_CYTHON:
@@ -35,7 +35,7 @@ else:
 
 
 setup(
-    name='dht22',
+    name='sensor',
     version='0.0.1',
     author='Simon Gomizelj',
     author_email='simon@vodik.xyz',
@@ -45,11 +45,6 @@ setup(
     description='Python3 serializer with memoryview support',
     long_description=long_description,
     install_requires=[
-        'aiohttp',
-        'aiohttp-index',
-        'msgpack-python',
-        'prometheus-async',
-        'prometheus-client',
         'pyzmq>=17.0.0b1'
     ],
     cmdclass = cmdclass,
