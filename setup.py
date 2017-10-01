@@ -48,7 +48,8 @@ setup(
         'aiohttp',
         'aiohttp-index',
         'msgpack-python',
-        'prometheus_async',
+        'prometheus-async',
+        'prometheus-client',
         'pyzmq>=17.0.0b1'
     ],
     cmdclass = cmdclass,
