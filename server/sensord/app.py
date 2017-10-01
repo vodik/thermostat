@@ -60,9 +60,7 @@ async def start_sensor(app):
 
     async def read_loop(publisher):
         while True:
-            print('READING')
             identifier, measurement = await reader.recv_multipart()
-            print(identifier, measurement)
             assert identifier.startswith(b'dht22')
             payload = msgpack.unpackb(measurement, use_list=False)
 
