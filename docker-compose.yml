@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  prometheus:
+    build: prometheus
+    volumes:
+      - prometheus:/prometheus
+    ports:
+      - "9090:9090"
+
+  sensord:
+    build: server
+    ports:
+      - "6667:6667"
+      - "9306:9306"
+
+  # grafana:
+  #   build: grafana
+  #   volumes:
+  #     - grafana:/var/lib/grafana
+  #   ports:
+  #     - "3000:3000"
+
+volumes:
+  grafana:
+  prometheus:
