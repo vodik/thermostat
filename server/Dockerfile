@@ -3,8 +3,8 @@ LABEL maintainer "Simon Gomizelj <simon@vodik.xyz>"
 
 WORKDIR /app
 COPY . /app
-RUN pip install /app
+RUN pip install gunicorn uvloop -e /app
 
-EXPOSE 5000
-ENTRYPOINT ["python"]
-CMD ["-m", "aiohttp.web", "sensord.app:app_factory", "-H", "0.0.0.0", "-P", "9306"]
+EXPOSE 9306
+ENTRYPOINT ["gunicorn"]
+CMD ["sensord.app:app_factory()", "--bind", "0.0.0.0:9306", "--worker-class", "aiohttp.GunicornUVLoopWebWorker"]
