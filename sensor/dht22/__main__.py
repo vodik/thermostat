@@ -20,7 +20,7 @@ async def dht22_poll(target, pin, identifier):
     future = asyncio.ensure_future(sensor.poll())
     try:
         sender = context.socket(zmq.PUSH)
-        sender.connect('tcp://0.0.0.0:9305')
+        sender.connect(target)
         with contextlib.closing(sender):
             while True:
                 humidity, temperature = await subscription.read()
