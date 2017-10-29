@@ -56,7 +56,7 @@ async def websocket_sensor(request):
 
 async def start_sensor(app):
     reader = context.socket(zmq.PULL)
-    reader.bind('tcp://0.0.0.0:6667')
+    reader.bind('tcp://0.0.0.0:9305')
 
     async def read_loop(publisher):
         while True:

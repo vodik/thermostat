@@ -11,7 +11,7 @@ services:
   sensord:
     build: server
     ports:
-      - "6667:6667"
+      - "9305:9305"
       - "9306:9306"
 
   # grafana:

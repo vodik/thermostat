@@ -24,7 +24,7 @@ sensor network via zmq:
 
 .. code ::
 
-    python -m dht22 --pin 4 tcp://localhost:6667
+    python -m dht22 --pin 4 tcp://localhost:9305
 
 Then a centralized daemon recieves incoming metrics, exposes the value over a
 REST endpoint and a WebSocket.
